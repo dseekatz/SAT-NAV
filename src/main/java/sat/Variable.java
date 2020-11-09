@@ -1,20 +1,19 @@
 package sat;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 /**
  * A single propositional logic variable
  */
-public class Variable {
+public class Variable implements Observable{
 
     private boolean isAssigned = false;
     private Boolean assignment;
-    private Set<Clause> clauses = new HashSet<>();
+    private Set<Observer> observers = new HashSet<>();
 
-    public Optional<Boolean> getAssignment() {
-        return assignment == null ? Optional.empty() : Optional.of(assignment);
+    public boolean getAssignment() {
+        return assignment;
     }
 
     public boolean isAssigned() {
@@ -24,24 +23,27 @@ public class Variable {
     public void setAssignment(boolean assignment) {
         this.assignment = assignment;
         isAssigned = true;
-        notifyClauses();
+        notifyObservers();
     }
 
     public void unassign() {
         assignment = null;
         isAssigned = false;
-        notifyClauses();
+        notifyObservers();
     }
 
-    public void addListener(Clause clause) {
-        clauses.add(clause);
+    @Override
+    public void addObserver(Observer o) {
+        observers.add(o);
     }
 
-    public void removeListener(Clause clause) {
-        clauses.remove(clause);
+    @Override
+    public void removeObserver(Observer o) {
+        observers.remove(o);
     }
 
-    public void notifyClauses() {
-        clauses.forEach(c -> c.update(this));
+    @Override
+    public void notifyObservers() {
+        observers.forEach(o -> o.update(this));
     }
 }
