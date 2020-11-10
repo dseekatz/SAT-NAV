@@ -39,9 +39,9 @@ public class Term implements Observer, Observable{
         }
         Variable v = ((Variable) o);
         if (v.isAssigned()) {
-                isSatisfied = v.getAssignment() ^ isNegated; // bitwise xor
+            isSatisfied = v.getAssignment() ^ isNegated; // bitwise xor
         } else {
-                isSatisfied = false;
+            isSatisfied = false;
         }
         notifyObservers();
     }
