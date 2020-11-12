@@ -11,6 +11,13 @@ public abstract class Clause implements Observer, Observable {
     private State state = State.UNRESOLVED;
     private Formula formula;
 
+    protected enum State{
+        SATISFIED,
+        CONFLICTING,
+        UNIT,
+        UNRESOLVED
+    }
+
     public Clause(Formula f) {
         setFormula(f);
     }
@@ -36,13 +43,6 @@ public abstract class Clause implements Observer, Observable {
     @Override
     public void removeObserver(Observer o) {
         // not applicable
-    }
-
-    protected enum State{
-        SATISFIED,
-        CONFLICTING,
-        UNIT,
-        UNRESOLVED
     }
 
     public void addTerm(Term t) {
@@ -80,6 +80,21 @@ public abstract class Clause implements Observer, Observable {
         return terms.stream()
                 .filter(t -> !t.variable().isAssigned())
                 .count() == 1;
+    }
+
+    protected Term solveUnit() {
+        Term unitTerm = terms.stream()
+                .filter(t -> !t.isSatisfied())
+                .findAny()
+                .orElseThrow(ImplicationNotPresentException::new);
+        if (unitTerm.isNegated()) {
+            unitTerm.variable().setAssignment(false);
+        } else {
+            unitTerm.variable().setAssignment(true);
+        }
+        state = State.SATISFIED;
+        notifyObservers();
+        return unitTerm;
     }
 
     protected boolean allAssigned() {

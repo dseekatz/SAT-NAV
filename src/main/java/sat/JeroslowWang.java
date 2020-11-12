@@ -3,7 +3,7 @@ package sat;
 public class JeroslowWang implements DecisionHeuristic {
 
     @Override
-    public Variable getNextAssignment(Formula f) {
+    public Variable getAndAssignNextVar(Formula f) {
         return null;
     }
 }

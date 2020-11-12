@@ -1,8 +1,15 @@
 package sat;
 
+/**
+ * DPLL implementation based on Chapter 2 of Kroenig and Strichman. Decision Procedures: An Algorithmic Point of View.
+ *
+ * @author David Seekatz
+ */
 public class DPLL {
     Formula f;
     DecisionHeuristic dh;
+    ImplicationGraph impGraph = new ImplicationGraph();
+    int currentLevel = 1;
 
     public DPLL(Formula f, DecisionHeuristic dh) {
         this.f = f;
@@ -51,7 +58,22 @@ public class DPLL {
      * @return
      */
     private boolean decide() {
-        return false;
+        if (allAssigned()) {
+            return false;
+        }
+        Variable assigned = dh.getAndAssignNextVar(f);
+        //impGraph.addDecisionAssignment();
+        currentLevel++;
+        return true;
+    }
+
+    /**
+     * returns true if all variables in the formula have been assigned, false otherwise
+     * @return
+     */
+    private boolean allAssigned() {
+        return f.getClauses().stream()
+                .noneMatch(c -> c.getState() == Clause.State.UNIT || c.getState() == Clause.State.UNRESOLVED);
     }
 
     /**
@@ -59,6 +81,11 @@ public class DPLL {
      * @return
      */
     private boolean propogate() {
-        return false;
+        while (!impGraph.hasConflict() && f.hasImplications()) {
+            Clause unit = f.getNextImplication();
+            Term unitTerm = unit.solveUnit();
+            impGraph.addImpliedAssignment(unitTerm, unit, currentLevel);
+        }
+        return impGraph.hasConflict();
     }
 }

@@ -2,13 +2,14 @@ package sat;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Formula implements Observer {
-    private Map<Clause, Boolean> clauses = new HashMap<>();
+    private Map<Clause, Boolean> clausesSatisfied = new HashMap<>();
     boolean isSatisfied;
 
     public void addClause(Clause c) {
-        clauses.put(c, false);
+        clausesSatisfied.put(c, false);
     }
 
     @Override
@@ -19,7 +20,7 @@ public class Formula implements Observer {
         }
         Clause c = ((Clause) o);
         if (c.isSatisfied()) {
-            clauses.replace(c, true);
+            clausesSatisfied.replace(c, true);
             if (allSatisfied()) {
                 isSatisfied = true;
                 return;
@@ -28,6 +29,21 @@ public class Formula implements Observer {
     }
 
     private boolean allSatisfied() {
-        return clauses.values().stream().allMatch(b -> b);
+        return clausesSatisfied.values().stream().allMatch(b -> b);
+    }
+
+    public boolean hasImplications() {
+        return clausesSatisfied.keySet().stream().anyMatch(Clause::isUnitClause);
+    }
+
+    public Clause getNextImplication() {
+        return clausesSatisfied.keySet().stream()
+                .filter(Clause::isUnitClause)
+                .findAny()
+                .orElseThrow(ImplicationNotPresentException::new);
+    }
+
+    protected Set<Clause> getClauses() {
+        return clausesSatisfied.keySet();
     }
 }
