@@ -1,5 +1,7 @@
 package sat;
 
+import java.util.Collection;
+
 /**
  * DPLL implementation based on Chapter 2 of Kroenig and Strichman. Decision Procedures: An Algorithmic Point of View.
  *
@@ -61,8 +63,13 @@ public class DPLL {
         if (allAssigned()) {
             return false;
         }
-        Variable assigned = dh.getAndAssignNextVar(f);
-        //impGraph.addDecisionAssignment();
+        Variable assigned = dh.getAndAssignNextVar();
+        // Add newly assigned terms to the decision graph
+        f.getClauses().stream()
+                .map(Clause::getTerms)
+                .flatMap(Collection::stream)
+                .filter(t -> t.variable().equals(assigned))
+                .forEach(t -> impGraph.addDecisionAssignment(t, currentLevel));
         currentLevel++;
         return true;
     }

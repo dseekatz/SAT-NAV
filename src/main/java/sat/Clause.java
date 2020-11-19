@@ -1,5 +1,7 @@
 package sat;
 
+import com.google.errorprone.annotations.Var;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -100,6 +102,20 @@ public abstract class Clause implements Observer, Observable {
     protected boolean allAssigned() {
         return terms.stream()
                 .allMatch(t -> t.variable().isAssigned());
+    }
+
+    protected Set<Term> getTerms() {
+        return terms;
+    }
+
+    public boolean containsLiteral(Variable v) {
+        return terms.stream()
+                .map(Term::variable)
+                .anyMatch(var -> var.equals(v));
+    }
+
+    public int length() {
+        return terms.size();
     }
 
 

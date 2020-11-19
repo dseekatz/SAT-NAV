@@ -1,15 +1,21 @@
 package sat;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class Formula implements Observer {
     private Map<Clause, Boolean> clausesSatisfied = new HashMap<>();
+    private Set<Variable> literals = new HashSet<>();
     boolean isSatisfied;
 
     public void addClause(Clause c) {
         clausesSatisfied.put(c, false);
+        c.getTerms().stream()
+                .map(Term::variable)
+                .distinct()
+                .forEach(v -> literals.add(v));
     }
 
     @Override
@@ -45,5 +51,9 @@ public class Formula implements Observer {
 
     protected Set<Clause> getClauses() {
         return clausesSatisfied.keySet();
+    }
+
+    protected Set<Variable> getLiterals() {
+        return literals;
     }
 }

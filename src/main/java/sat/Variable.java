@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * A single propositional logic variable
  */
-public class Variable implements Observable{
+public class Variable implements Observable {
 
     private boolean isAssigned = false;
     private Boolean assignment;
