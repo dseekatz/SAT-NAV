@@ -17,8 +17,9 @@ public class JeroslowWang implements DecisionHeuristic {
 
     @Override
     public Variable getAndAssignNextVar() {
-        f.getLiterals().forEach(this::computeJValue);
+        f.getLiterals().stream().filter(v -> !v.isAssigned()).forEach(this::computeJValue);
         Variable bestChoiceVar = jValues.entrySet().stream()
+                .filter(e -> !e.getKey().isAssigned())
                 .max(new MaxFinder())
                 .orElseThrow(RuntimeException::new)
                 .getKey();

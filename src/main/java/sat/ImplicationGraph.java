@@ -12,13 +12,22 @@ public class ImplicationGraph {
             .allowsSelfLoops(false)
             .build();
     private TermAtLevel lastAssignment;
+    private Clause conflictingClause = null;
 
     private void setLastAssignment(Term t, int level) {
         lastAssignment = new TermAtLevel(t, level);
     }
 
     public boolean hasConflict() {
-        return false;
+        return !(conflictingClause == null);
+    }
+
+    public void setConflictingClause(Clause c) {
+        this.conflictingClause = c;
+    }
+
+    public Clause getConflictingClause() {
+        return conflictingClause;
     }
 
     public void addImpliedAssignment(Term impliedTerm, Clause implyingClause, int level) {
@@ -28,6 +37,9 @@ public class ImplicationGraph {
                 implyingClause
         );
         setLastAssignment(impliedTerm, level);
+        if (implyingClause.getState() == Clause.State.CONFLICTING) {
+            setConflictingClause(implyingClause);
+        }
     }
 
     public void addDecisionAssignment(Term decision, int level) {

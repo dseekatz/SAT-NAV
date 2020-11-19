@@ -52,7 +52,11 @@ public class DPLL {
      * @return
      */
     private int analyzeConflict() {
-        return 0;
+        if (currentLevel == 0) {
+            return -1;
+        }
+        Clause cl = impGraph.getConflictingClause();
+        // TODO: stop criterion
     }
 
     /**
@@ -64,7 +68,7 @@ public class DPLL {
             return false;
         }
         Variable assigned = dh.getAndAssignNextVar();
-        // Add newly assigned terms to the decision graph
+        // Add newly assigned terms to the implication graph
         f.getClauses().stream()
                 .map(Clause::getTerms)
                 .flatMap(Collection::stream)
